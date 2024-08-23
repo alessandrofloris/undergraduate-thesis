@@ -1,0 +1,97 @@
+\chapter{Traduction}
+
+\section{From Basic P Systems to Petri Nets}
+\label{sec:basic_p_to_pt}
+
+To model a flat P system as a PT-net we take inspiration from \cite{kleijn2008petri}, so we introduce a separate place $(a)$ for each object $a$. 
+For each evolution rule $r$ we introduce a separate transition $t^r$.
+If the transformation described by a rule $r$ consumes $k$ copies of an object $a$, then we introduce a $k$-weighted arc from place $(a)$ to transition $t^r$, and similarly for molecules being produced.
+Finally, assuming that, initially, the P system contains $n$ copies of object $a$, we introduce $n$ tokens into place $(a)$.
+We formalise this idea as follows.
+
+\begin{definition}[translating flat P systems into PT-nets]
+\label{def:def_tr_basic}
+The PT-net corresponding to $\Pi$ is:
+\[ N_\Pi = (P,T,W,M_0) \]
+where:
+\begin{enumerate}
+    \item $P=V$ and $M_0(p)=w(a)$ for every place $p=(a)$;
+    \item $T$ consists of distinct transitions $t=t^r$ for every evolution rule $r \in R$;
+    \item for each place $p=(a)$ the weight of the incoming arc is $W(p,t)=lhs^r(a)$ and 
+    $W(t,p)=rhs^r(a)$
+\end{enumerate}
+\end{definition}
+
+To capture the correspondence between the P system $\Pi$ and the PT-net $N_\Pi$, we introduce a straightforward bijection between configurations of $\Pi$ and markings of $N_\Pi$, based on the correspondence of objects and places as well as that of vector multi-rules and steps.
+
+\begin{definition}[mapping configurations]
+\label{def:map_conf}
+The marking $v(C)$ corresponding to configuration $C=(w)$ is defined by $v(C)(a)=w(a)$ for every place $(a)$.   
+$\beta(r_m)$, where $r_m$ is a multiset of rules over $R$, is defined by 
+$\beta(r_m)(t^r)=r_m(r)$ for every transition $t^r$.  
+\end{definition}
+
+\begin{definition}[mapping vector multi-rules]
+$\beta(r_m)$, where $r_m$ is a multiset of rules over $R$, is defined by 
+$\beta(r_m)(t^r)=r_m(r)$ for every transition $t^r$.  
+\end{definition}
+
+\begin{fact}[]
+$v(C_0)=M_0$
+\end{fact}
+We know that's true for the way we've defined $M_0$ in \hyperref[def:def_tr_basic]{$3.1.1$}.
+
+\begin{fact}[]
+$C \xRightarrow{r_m} C'$ if and only if $v(C)[\beta(r_m)> v(C')$ in $N_\Pi$
+\end{fact}
+
+Togheter with Fact 3.1.1, this implies that the computations of $\Pi$ coincide with step sequences of $N_\Pi$. 
+
+\section{From Synchronized P Sytems to PTI-nets}
+
+Here we extend the modus operandi of the section \hyperref[sec:basic_p_to_pt]{$3.1$} to translate 
+a flat synchronized P system.
+For each synchronizaiton rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this syncronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call this deposit places).
+We keep the arcs from places $(a)$ to transitions $t^r$, but substitute the arcs from $t^r$ to $(a)$ with arcs from $t^r$ to $(a,d)$.
+We then add a new place $p_{sg}$ that we call global syncronization place, and is used to check if a syncronization translation has been fired in the last step.
+PT-nets are not expressive enough to model the absence of token in a place, so we need to use PT-nets extended with inhibitor arcs.
+Below a more formal definition.
+
+\begin{definition}[Translating Synchronized P systems into PTI-nets]
+The PTI-net corresponding to $\Pi$ is 
+\[ N_\Pi = (P,T,W,I,M_0) \]
+,where:
+
+\begin{enumerate}
+  
+  \item We define the set $P$ as follows:
+  \begin{enumerate}
+     \item for each $a \in V$, there exists a place $(a)$ and a place $(p,d)$, and 
+     $M_0(p)=w(a)$ for each place $p=(a)$ and $M_0(p)=0$ for each place $p=(a,d)$;
+     \item for each $r_s \in \rho$, there exists a place $(s,l)$ and a place $(s,l')$;
+     $M_0(p)=1$ for each place $(s,l)$ and $M_0(p)=0$ for each place $(s,l')$
+     \item exists a place $(sg)$; $M_0(p)=0$ for the place $(sg)$;
+   \end{enumerate}
+    
+    \item $T$ consists of distinct transitions $t=t^r$ for every evolution rule $r \in R$, and 
+    distinct transitions $t=t^s$ for every syncronization rule $r_s \in \rho$;
+    for each $t^s$ in $T$ there exists two other control transitions $t=(t^s,1)$ and $t=(t^s,2)$;
+    
+    \item We define the function $W$ as follows:
+    \begin{enumerate}
+        \item for each place $p=(a)$, $W(p,t^r)=lhs^r(a)$, $W(p,t^s)=\sum_{r \in rs} rs(r)lhs^r(a)$, $W(t^r,p)=0$ and $W(t^s,p)=0$;
+        \item for each deposit place $p=(a,d)$, $W(p,t^r)=0$ and $W(p,t^s)=0$, $W(t^r,p)=rhs^r(a)$ and $W(t^s,p)=\sum_{r \in rs} rs(r)rhs^r(a)$;
+        \item for each place $p=(s,l)$, $W(p,t^s)=1$ and for each place $p=(s,l')$, $W(t^s,p)=1$;
+        \item for the place $p=(sg)$, $W(t^s,p)=1$;
+    \end{enumerate}
+
+    \item We define the relation $I$ as follows:
+    \begin{enumerate}
+        \item for each place $p=(s,l)$, and for each transition $t^r$, where $r \in r_s$, 
+        $(p,t^r) \in I$;
+    \end{enumerate}
+    
+\end{enumerate}
+\end{definition}
+
+Once there are no more transitions that can be fired all tokens in $p=(a,d)$ are moved in the place $p=(a)$ for each $a \in V$. So exists this ghost step that indicates the end of a computation of the P system. 
