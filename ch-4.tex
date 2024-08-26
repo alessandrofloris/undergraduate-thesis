@@ -12,9 +12,25 @@ that contains only the places $p=(a)$.
 The definition \hyperref[def:map_conf]{$3.1.2$} remains valid.
 
 \begin{definition}[mapping rules]
-... una volta fatto questo dovrebbe essere finito
+if $r_m$ has any synchronization rule we map $r_m$ with two steps:
+\begin{enumerate}
+    \item $\beta_1(r_m)(t^s)=r_m(r_s)$ for each $t^s$
+    \item $\beta_2(r_m)(t^r)=r_m(r)$ for each $t^r$;
+    $\beta_2(r_m)(t^{s'})=r_m(r_s)$ for each $t^{s'}$    
+\end{enumerate}
+Otherwise, if $r_m$ has no sync rules: $\beta(r_m)(t^r)=r_m(r)$ for each $t^r$
 \end{definition}
 
 \begin{fact}[]
 $v(C_0)=\psi(M_{0})$
 \end{fact}
+
+\begin{fact}[]
+If $r_m$ contains any sync rule: 
+$C \xRightarrow{r_m} C'$ if and only if 
+$v(C)[\beta_1(r_m)> v(C''') [\beta_2(r_m)>v(C'')[\gamma>v(C')$ in $N_\Pi$,
+otherwise: $C \xRightarrow{r_m} C'$ if and only if 
+$v(C)[\beta(r_m)>v(C'')[\gamma>v(C')$ in $N_\Pi$
+\end{fact}
+
+So we have shown that the computations of $\Pi$ coincide with n step sequences of $N_\Pi$ with $n=1$ or $n=2$, 

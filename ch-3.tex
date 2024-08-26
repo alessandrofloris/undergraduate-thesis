@@ -51,9 +51,10 @@ Togheter with Fact 3.1.1, this implies that the computations of $\Pi$ coincide w
 
 Here we extend the modus operandi of the section \hyperref[sec:basic_p_to_pt]{$3.1$} to translate 
 a flat synchronized P system.
-For each synchronizaiton rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this syncronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call this deposit places).
+For each synchronizaiton rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this syncronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
 We keep the arcs from places $(a)$ to transitions $t^r$, but substitute the arcs from $t^r$ to $(a)$ with arcs from $t^r$ to $(a,d)$.
-We then add a new place $p_{sg}$ that we call global syncronization place, and is used to check if a syncronization translation has been fired in the last step.
+Each syncrhonization transition is paired with two new control places $(s,1)$ and $(s,2)$ and a new transition $t^{s\prime}$.
+We do a zero-check in the places $(s,1)$ to verify if the relative sync transition has been fired.
 PT-nets are not expressive enough to model the absence of token in a place, so we need to use PT-nets extended with inhibitor arcs.
 Below a more formal definition.
 
@@ -68,30 +69,29 @@ The PTI-net corresponding to $\Pi$ is
   \begin{enumerate}
      \item for each $a \in V$, there exists a place $(a)$ and a place $(p,d)$, and 
      $M_0(p)=w(a)$ for each place $p=(a)$ and $M_0(p)=0$ for each place $p=(a,d)$;
-     \item for each $r_s \in \rho$, there exists a place $(s,l)$ and a place $(s,l')$;
-     $M_0(p)=1$ for each place $(s,l)$ and $M_0(p)=0$ for each place $(s,l')$
-     \item exists a place $(sg)$; $M_0(p)=0$ for the place $(sg)$;
-   \end{enumerate}
+     \item for each $r_s \in \rho$, there exists a place $(s,1)$ and a place $(s,2)$;
+     $M_0(p)=1$ for each place $(s,1)$ and $M_0(p)=0$ for each place $(s,2)$
+    \end{enumerate}
     
     \item $T$ consists of distinct transitions $t=t^r$ for every evolution rule $r \in R$, and 
-    distinct transitions $t=t^s$ for every syncronization rule $r_s \in \rho$;
-    for each $t^s$ in $T$ there exists two other control transitions $t=(t^s,1)$ and $t=(t^s,2)$;
+    distinct transitions $t=t^s$ for every synchronization rule $r_s \in \rho$;
+    for each $t^s$ in $T$ there exists one control transitions $t=t^{s'}$;
     
     \item We define the function $W$ as follows:
     \begin{enumerate}
         \item for each place $p=(a)$, $W(p,t^r)=lhs^r(a)$, $W(p,t^s)=\sum_{r \in rs} rs(r)lhs^r(a)$, $W(t^r,p)=0$ and $W(t^s,p)=0$;
         \item for each deposit place $p=(a,d)$, $W(p,t^r)=0$ and $W(p,t^s)=0$, $W(t^r,p)=rhs^r(a)$ and $W(t^s,p)=\sum_{r \in rs} rs(r)rhs^r(a)$;
-        \item for each place $p=(s,l)$, $W(p,t^s)=1$ and for each place $p=(s,l')$, $W(t^s,p)=1$;
-        \item for the place $p=(sg)$, $W(t^s,p)=1$;
+        \item for each place $p=(s,1)$, $W(p,t^s)=1$, $W(t^{s'},p)=1$ and for each place $p=(s,2)$, $W(t^s,p)=1$,$W(p,t^{s'})=1$ ;
     \end{enumerate}
 
     \item We define the relation $I$ as follows:
     \begin{enumerate}
-        \item for each place $p=(s,l)$, and for each transition $t^r$, where $r \in r_s$, 
+        \item for each place $p=(s,1)$, and for each transition $t^r$, where $r \in r_s$, 
         $(p,t^r) \in I$;
     \end{enumerate}
     
 \end{enumerate}
 \end{definition}
 
-Once there are no more transitions that can be fired all tokens in $p=(a,d)$ are moved in the place $p=(a)$ for each $a \in V$. So exists this ghost step that indicates the end of a computation of the P system. 
+Once there are no more transitions that can be fired, all tokens in $p=(a,d)$ are moved in the place $p=(a)$ for each $a \in V$. So there is a ghost step that indicates the end of a computation of the P system. 
+We indicate this ghost step as $\gamma$.
