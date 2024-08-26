@@ -1,5 +1,7 @@
 \chapter{Traduction}
 
+In this chapter we make our proposal on how P system can be interpreted by Petri nets, starting from the interpretation of a basic P system.
+
 \section{From Basic P Systems to Petri Nets}
 \label{sec:basic_p_to_pt}
 
@@ -51,9 +53,9 @@ Togheter with Fact 3.1.1, this implies that the computations of $\Pi$ coincide w
 
 Here we extend the modus operandi of the section \hyperref[sec:basic_p_to_pt]{$3.1$} to translate 
 a flat synchronized P system.
-For each synchronizaiton rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this syncronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
+For each synchronization rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this synchronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
 We keep the arcs from places $(a)$ to transitions $t^r$, but substitute the arcs from $t^r$ to $(a)$ with arcs from $t^r$ to $(a,d)$.
-Each syncrhonization transition is paired with two new control places $(s,1)$ and $(s,2)$ and a new transition $t^{s\prime}$.
+Each synchronization transition is paired with two new control places $(s,1)$ and $(s,2)$ and a new transition $t^{s\prime}$.
 We do a zero-check in the places $(s,1)$ to verify if the relative sync transition has been fired.
 PT-nets are not expressive enough to model the absence of token in a place, so we need to use PT-nets extended with inhibitor arcs.
 Below a more formal definition.

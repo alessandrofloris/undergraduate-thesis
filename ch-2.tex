@@ -15,10 +15,9 @@ the sets of all finite strings of elements in $V$, including the empty string $\
 Every string $v \in V$ describes a multiset over $V$.
 \end{definition}
 
-
 \section{P Systems}
 
-We start from the most basic definition of a P system.
+Let's start from the definition of a basic P system.
 
 \begin{definition}[P system]
 A P system (of degree $d$, with $d \geq 1$) is a tuple
@@ -65,22 +64,23 @@ Let's see an example of a flat P system.
 \label{}
 \end{figure}
 
-From now on when we talk about P systems we are talking of flat P systems.
+From now on when we talk about P systems we refer to flat P systems.
 
 \subsection{Synchronized P systems}
 
-Here we extend the latter definition of a flat P System with the concept of synchronization. 
+Here we extend the latter definition of a flat P System with the concept of synchronization among rules of the same membrane. 
 
 \begin{definition}[Synchronized P system]
 A synchronized P system of degree 1 is a tuple
 
-\[ \Pi = (V,\mu,w^0,(R,\rho)) \]
+\[ \Pi = (V,\mu,w^0,R,\rho) \]
 
 where:
 \begin{enumerate}
-  \item $\rho$ is a partial relation defined over the set $R$ of rules specifying
-  the synchronization relation over the rules;
-  $\rho$ is irreflexive, asymmetric and transitive;
+    \item $(V,\mu,w^0,r)$ is a flat P system;    
+    \item $\rho$ is a partial relation defined over the set $R$ of rules specifying
+    the synchronization relation over the rules;
+    $\rho$ is irreflexive, asymmetric and transitive;
 \end{enumerate}
 \end{definition}
 

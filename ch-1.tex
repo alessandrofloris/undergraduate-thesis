@@ -1,2 +1,16 @@
 \chapter{Introduction}
 
+In this thesis we try, successfully, to find a link between synchronized P systems and Petri nets.
+
+P systems (known also as membrane systems) introduced in \cite{puaun2000computing}, are part of the branch of natural computing, which abstracts computing models from the architecture and the functioning of living cells.
+The ﬁrst models of membrane systems were starting from the single cell and its organization as a hierarchical structure of compartments, deﬁned by membranes, where a localized biochemistry takes place.
+Thus, the obtained computing device was a distributed parallel model, with multisets of objects (“chemicals") placed in regions (nodes of a tree) and processed by “reactions" of a biochemical type.
+This obtained computing devices proved to be rather powerful, equivalent with Turing machines.
+The model was extended in various ways, and some of this extensions are presented in ...
+In this thesis we consider a class of P systems called synchronized P systems talked in \cite{aman2019synchronization},\cite{aman2022power}; this kind of synchronization works among the rules of the same membrane.
+More exactly a rule synchronizing with a non-empty set of rules is applicable at least once, only if each rule from the set of rules is applicable at least once.
+
+Petri nets are an abstract, formal model of information flow.
+Introduced in \cite{petri1962kommunikation}, the major use of Petri nets is to model concurrent systems, and membrane systems can be seen as highly concurrent systems, so they can be modeled as Petri nets, and that's the object of this thesis.
+From a formal point of view , Petri nets are bipartite directed graphs consisting of two kinds of nodes, called places and transitions.
+Places indicate the local availability of resources, whereas transitions are actions which can occur depending on local conditions related to the availability of resources (and thus can be used to represent evolution rules associated of a membrane system).
