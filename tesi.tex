@@ -36,7 +36,7 @@
 \usepackage{amsthm}
 \usepackage[
 backend=biber,
-style=alphabetic,
+style=numeric,
 sorting=ynt
 ]{biblatex}
 \usepackage{hyperref}
@@ -50,6 +50,7 @@ sorting=ynt
     linkcolor=blue,
     filecolor=magenta,      
     urlcolor=cyan,
+    citecolor=blue,
     pdftitle={Membrane Systems and Petri Nets},
     pdfpagemode=FullScreen,
 }
@@ -57,7 +58,7 @@ sorting=ynt
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 
-\theoremstyle{fact}
+\theoremstyle{definition}
 \newtheorem{fact}{Fact}[section]
 
 \addbibresource{references.bib}

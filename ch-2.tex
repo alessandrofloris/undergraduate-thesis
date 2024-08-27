@@ -1,8 +1,8 @@
 \chapter{Background}
 
-\section{Basic Definitions}
+In this chapter we introduce some general notions as well as a more deep understanding of what P systems and Petri nets are.
 
-In this section we provide some definitions that will be used throughout the thesis.
+\section{Basic Definitions}
 
 \begin{definition}[Multiset]
 Let $U$ be an arbitrary set. A multiset over U is a mapping \newline $m : U \rightarrow N$.
@@ -17,11 +17,17 @@ Every string $v \in V$ describes a multiset over $V$.
 
 \section{P Systems}
 
-Let's start from the definition of a basic P system.
+Membrane computing is a branch of natural computing, introduced by Gheorghe Paun with the definition of P systems in \cite{puaun2000computing,puaun2002membrane,paun1999computing}.
+
+Membrane systems are based upon the notion of \textit{membrane structure}, which is a structure composed by several cell-membranes, hierarchically embedded in a main membrane called the \textit{skin membrane}.
+The membranes delimit \textit{regions} and we associate with each region a set of \textit{objects}, described by some symbols over an alphabet, and a set of \textit{evolution rules}.
+In the basic variant, the objects evolve according to the evolution rules, which can modify the objects to obtain new objects.
+The evolution rules are applied in a maximally parallel manner: at each step, all the objects which can evolve should evolve.
+If a computation \textit{halts}, so no further evolution rule can be applied, the result of the computation is defined to be the number of objects in a specified membrane.
 
 \begin{definition}[P system]
 A P system (of degree $d$, with $d \geq 1$) is a tuple
-\[ \Pi = (V,\mu,w^0_1,...,w^0_d,R_1,...,R_d)\]
+\[ \Pi = (V,\mu,w^0_1,...,w^0_d,R_1,...,R_d, i_0)\]
 where:
 \begin{enumerate}
   \item $V$ is an alphabet; its elements are called objects;
@@ -31,13 +37,14 @@ where:
   \item $R_i, 1 \leq i \leq d$, are finite sets of evolution rules over $V$ associated 
   with the regions $1,2,...,d$ of $\mu$; these evolution rules are of the form $u \rightarrow v$,
   where $u$ and $v$ are strings from $V*$;
+  \item $i_0$ is a number between 1 and $d$ which specifies the output membrane of %\Pi;
 \end{enumerate}
 A configuration of $\Pi$ is a tuple $C=(w_1,...,w_d)$ of multisets of objects, and 
 $C_0=(w^0_1,...,w^0_d)$ is the initial configuration.
 \end{definition}
 
-For the sake of simplicity, in what follows, we consider the flat (or elementary) P system, that is a P system of degree one.
-Actually, according to \cite{agrigoroaiei2010flattening}, any P system can be flattened to a system with only one membrane.
+According to \cite{agrigoroaiei2010flattening}, any P system can be flattened to a system of degree 1, we call this type of P systems \textit{flat P systems}.
+For the sake of simplicity, from now on when we talk about P systems we refer to flat P systems.
 
 \begin{definition}[Flat P system]
 A flat P system is a P system of degree one
@@ -48,7 +55,17 @@ A configuration of $\Pi$ is a singleton $C=(w)=w$ of a multiset of objects, and
 $C_0=(w^0)=w^0$ is the initial configuration.
 \end{definition}
 
-Let's see an example of a flat P system.
+The following example will clarify the definition of a P system.
+Consider the system of degree 1:
+\begin{description}
+   \item $\Pi=(V,\mu,w^0,R)$,
+   \item $V=\{a,b,c\}$,
+   \item $\mu=[_{1}]_{1}$,
+   \item $C_0=w^0=a^2b$,
+   \item $R=\{r_1:a \rightarrow b, r_2:a \rightarrow c\}$
+\end{description}
+
+The system is represented in Fig 2.1.
 
 \begin{figure}[h]
 \centering
@@ -56,22 +73,33 @@ Let's see an example of a flat P system.
 \begin{tikzpicture}
     \draw[thick, rounded corners=10pt] (0, 0) rectangle (4, 2.5) node[above right] {1};
     
-    \node at (2, 1.5) {$a^2b$};
-    \node at (2,1) (rule) {$r1: c \rightarrow d$};
+    \node at (2, 1.75) {$a^2b$};
+    \node at (2,1.25) (rule) {$r1: a \rightarrow b$};
+    \node at (2,0.75) (rule) {$r2: a \rightarrow c$};
 \end{tikzpicture}
 
 \caption{}
 \label{}
 \end{figure}
 
-From now on when we talk about P systems we refer to flat P systems.
+The possibilities to evolve in one step from the initial configuration are: 
+\begin{description}
+    \item $C=w=b^3$, obtained applying $r=r_1^2$,
+    \item $C=w=bc^2$, obtained applying $r=r_2^2$,
+    \item $C=w=b^2c$, obtained applying $r=r_1 r_2$
+\end{description}
 
 \subsection{Synchronized P systems}
 
-Here we extend the latter definition of a flat P System with the concept of synchronization among rules of the same membrane. 
+In this section we introduce a new class of P systems, P systems with \textit{synchronization among the rules of the same membrane}.
+In the previous section we've seen a kind of synchronization where all regions use their rules in parallel in the maximal mode.
+That synchronization that we're interested in is different, more exactly, a rule synchronizing with a non-empty set of rules is applicable at least once only if each rule from the set of rules is applicable at least once.
+
+We call P systems with this kind of synchronization \textit{synchronized P systems}.
+They are introduced and talked in \cite{aman2019synchronization,aman2022power}.
 
 \begin{definition}[Synchronized P system]
-A synchronized P system of degree 1 is a tuple
+A synchronized P system is a tuple
 
 \[ \Pi = (V,\mu,w^0,R,\rho) \]
 
