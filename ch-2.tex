@@ -6,8 +6,10 @@ In this chapter we introduce some general notions as well as a more deep underst
 
 \begin{definition}[Multiset]
 Let $U$ be an arbitrary set. A multiset over U is a mapping \newline $m : U \rightarrow N$.
-The multiplicity of an element $u$ in $m$ is given by the natural number $m(s)$.
+The multiplicity of an element $u$ in $m$ is given by the natural number $m(u)$.
 \end{definition}
+
+The operator $\oplus$ denotes multiset union: $m \oplus m' = m(u) + m'(u)$ for each $u$.
 
 \begin{definition}[Alphabet]
 An alphabet is a finite nonempty set of abstract symbols. Given an alphabet $V$, we denote by $V^*$
@@ -56,6 +58,8 @@ $C_0=(w^0)=w^0$ is the initial configuration.
 \end{definition}
 
 The following example will clarify the definition of a P system.
+\begin{example}
+\label{ex:flat_membrane}
 Consider the system of degree 1:
 \begin{description}
    \item $\Pi=(V,\mu,w^0,R)$,
@@ -63,7 +67,8 @@ Consider the system of degree 1:
    \item $\mu=[_{1}]_{1}$,
    \item $C_0=w^0=a^2b$,
    \item $R=\{r_1:a \rightarrow b, r_2:a \rightarrow c\}$
-\end{description}
+\end{description}    
+\end{example}
 
 The system is represented in Fig 2.1.
 
@@ -96,7 +101,7 @@ In the previous section we've seen a kind of synchronization where all regions u
 That synchronization that we're interested in is different, more exactly, a rule synchronizing with a non-empty set of rules is applicable at least once only if each rule from the set of rules is applicable at least once.
 
 We call P systems with this kind of synchronization \textit{synchronized P systems}.
-They are introduced and talked in \cite{aman2019synchronization,aman2022power}.
+They are introduced and studied in \cite{aman2019synchronization,aman2022power}.
 
 \begin{definition}[Synchronized P system]
 A synchronized P system is a tuple
@@ -112,7 +117,8 @@ where:
 \end{enumerate}
 \end{definition}
 
-Let's try to understand better what syncronization means:
+% Questa parte è da cancellare e riscrivere 
+Let's try to understand better what synchronization means:
 let $(r1,r2) \in \rho$; if $r1$ is executed at least one time, then also
 $r2$ has to be executed at least one time during this step, and vice versa; if that is not possible neither of them will be executed during the current step.
 
@@ -120,14 +126,56 @@ We use the following notation to describe an instance of $\rho$:
 $\rho=((r1 \otimes r2),(r3 \otimes r4 \otimes r5))$.
 This means that $r_1$ can be executed only and only if $r_2$ can be executed at least one time;
 in addition, $r_1$ it's executed at least one time only and only if also $r_2$ it's executed at least one time.
-Let's see an example to grasp the concept...
 
 \begin{definition}[synchronization rule]
 \label{def:sync_rule}
-We define a synchronization rule $r_s$ as a set of rules defined by a tuple in $\rho$.
+We define a synchronization rule $r_s$ as a set of rules.\\
+For example $r_s=r_1 r_2 = r_1 \otimes r_2$ could be a synchronization rule.
 \end{definition}
 
-So given the previous example $(r1 \otimes r2) \in \rho$ then $r_s=\{r1,r2\}$.
+\begin{example}
+    We modify \hyperref[ex:flat_membrane]{$example 1$} adding the synchronization 
+    $r_1 \otimes r_2$.\\
+    Now there is only one possible way to evolve in one step from the initial configuration:\\
+    $C=w=b^2c$, obtained applying $r=r_1 r_2=r_1 \otimes r_2=r_{12}$;
+\end{example}
+
+In this previous example we have illustrated how the maximal parallelism behaviour is modified when synchronization of rules is used.
+
+\section{Semantics of Synchronized P Systems}
+
+For the purposes of this thesis, it is useful to decompose a synchronized P system computation step into multiple micro steps.
+We know from \cite{busi2007causality} that the classical maximal parallelism semantics is equivalent to a causal semantics where a maximal parallelism evolution step is represented as a sequence of simple evolution steps, which are obtained by the application of a single evolution rule.
+We need then to modify what a configuration is.
+To represent the states of the system reached after the execution of a non maximal sequence of simple evolution rules, we introduce the notion of \textit{partial configuration} of a system.
+In a partial configuration, the contents of each region is represented by two multisets.
+
+\begin{definition}[partial configuration]
+A partial configuration of $\Pi$ is a tuple $C_p=(w,w')$ 
+where $w$ is the active multiset and $w'$ is the deposit (or frozen) multiset.
+\end{definition}
+
+A configuration is then a partial configuration containing no objects in the deposit;
+So the initial configuration should be $C_0=(w,\emptyset)$.
+Configurations represent the states reached after the execution of a maximal parallelism computation step.
+
+Each micro step is obtained by the application of a single evolution rule.
+When no evolution rule can be applied a special rule (function) will be used.
+
+We introduce a new function, the \textit{transport function}, that transports the objects from the deposit multiset to the active multiset; this function will be used in the definition of the maximal parallelism computation step.
+
+\begin{definition}[transport function]
+Let $C=(w,w')$ be a partial configuration of $\Pi$.\newline
+The transport function $transport: Conf_\Pi \rightarrow Conf_\Pi$ is defined as follows:\newline
+$transport((w,w'))=(w \oplus w', \emptyset)$
+\end{definition}
+
+Using the classical maximal parallelism semantics a rule $r$ that is part of a synchronization rule $r_s$ can be executed during a computational step only if $r_s$ is executed in the same computational step.
+In our causal semantics we decompose a computational step in micro steps; it results that $r$ can be executed only if $r_s$ has been executed in a previous micro step that is part of the same computational step.
+
+\begin{definition}[computational step of causality semantics]
+In our causality semantics a computational step is a sequence of evolution steps obtained by the application of a single evolution rule
+\end{definition}
 
 \section{Petri Net}
 
