@@ -146,6 +146,7 @@ In this previous example we have illustrated how the maximal parallelism behavio
 
 For the purposes of this thesis, it is useful to decompose a synchronized P system computation step into multiple micro steps.
 We know from \cite{busi2007causality} that the classical maximal parallelism semantics is equivalent to a causal semantics where a maximal parallelism evolution step is represented as a sequence of simple evolution steps, which are obtained by the application of a single evolution rule.
+
 We need then to modify what a configuration is.
 To represent the states of the system reached after the execution of a non maximal sequence of simple evolution rules, we introduce the notion of \textit{partial configuration} of a system.
 In a partial configuration, the contents of each region is represented by two multisets.
@@ -166,16 +167,39 @@ We introduce a new function, the \textit{transport function}, that transports th
 
 \begin{definition}[transport function]
 Let $C=(w,w')$ be a partial configuration of $\Pi$.\newline
-The transport function $transport: Conf_\Pi \rightarrow Conf_\Pi$ is defined as follows:\newline
-$transport((w,w'))=(w \oplus w', \emptyset)$
+The transport function $\delta: Conf_\Pi \rightarrow Conf_\Pi$ is defined as follows:\newline
+$\delta((w,w'))=(w \oplus w', \emptyset)$
 \end{definition}
 
 Using the classical maximal parallelism semantics a rule $r$ that is part of a synchronization rule $r_s$ can be executed during a computational step only if $r_s$ is executed in the same computational step.
 In our causal semantics we decompose a computational step in micro steps; it results that $r$ can be executed only if $r_s$ has been executed in a previous micro step that is part of the same computational step.
+Now we describe how our semantics works with the following inference rules:\newline
+
+\noindent
+\begin{tabular}{ @{} r c l @{} }
+  R1. & \infer{(w,w') \xrightarrow{\delta} (w \oplus w', \emptyset) }
+{\text{no rule is applicable}} \\ \\
+  R2. & \infer{(w,w') \xrightarrow{r_s} (w - lhs(r_s), w' + rhs(r_s)) }
+{\text{$r_s$ is enabled in $(w,w')$}} \\ \\
+  R3. & \infer{(w,w') \xrightarrow{r} (w - lhs(r_s), w' + rhs(r_s)) }
+{\text{$r$ is enabled in $(w,w')$ and if $r$ is part of $r_s$, $r_s$ has been executed}} \\ \\
+\end{tabular}
 
 \begin{definition}[computational step of causality semantics]
-In our causality semantics a computational step is a sequence of evolution steps obtained by the application of a single evolution rule
+In our causality semantics a computational step is a ordered sequence of micro step, where each micro step is obtained by the application of a single evolution rule: 
+$r_1, ..., r_k$ where $r_i \in R$ or $r_i \in R_s$ for $i=1,...,k$
 \end{definition}
+
+Let's see an example of our new semantics.
+\begin{example}
+    Consider the system 
+    \[ \Pi = (\{a,b,c,d\},[_1]_1,a^2bc,\{r_1:a \rightarrow b, r_2: b \rightarrow c\}, \{r_{s1}: r_1 r_2\}) \]
+    The only rule we can apply is R2, since $r_{s1}$ is enabled in $(a^2bc,\emptyset)$ and no other evolution rule is.
+    After this micro step we have $C_p = (ac,bc)$.
+    Now we can apply rule R3, so we apply the evolution rule $r_1$ thus obtaining the partial configuration $C_p = (c,b^2c)$.
+    No other evolution rule is enabled, so R1 is the only rule applicable, and we get 
+    $C = (b^2c^2)$, and this is the configuration obtained after a whole computational step.
+\end{example}
 
 \section{Petri Net}
 
