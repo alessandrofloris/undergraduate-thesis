@@ -1,36 +1,28 @@
 \chapter{Proof of Equivalence}
 
-In the past chapter we've modeled a flat synchronized P system as a PTI-net. 
-Notice that there is not a bijection correspondence between objects in the P system and places in the net as with basic P systems.
-We need a new operator.
+We now want to prove that a computational step of $\Pi$ is equivalent to a computational step of $PTI_\Pi$.
+So we know from chapter 2 that a $\Pi$ step is an ordered sequence of micro steps.
+Each micro step is the application of a single evolution rule;
+We have thus to prove that a micro step of $\Pi$ is equivalent to a step of our Petri net.
+The following is an example of a micro step: $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$.
+Let's map the execution of a rule to the execution of a multiset of transitions.
+
+\begin{definition}[mapping micro steps]
+    Given a micro step $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$ from $\Pi$:
+    \begin{enumerate}
+        \item if $r=r_s$ then $t^s$ is executed;
+        \item if $r=r$ then $t^r$ is executed, and if during the precedent step a transition $t^s$ has been executed, then also fire $t^s'$;
+        \item if $r=\delta$ then $\gamma$ is executed;
+    \end{enumerate}
+\end{definition}
+
+Since a configuration $C$ in $\Pi$ is a pair $C=(w1,w2)$ we need to change \hyperref[def:map_conf]{$3.1.1$}.
 
 \begin{definition}[$\psi$ operator]
 We define a function $\psi: M \rightarrow M$ that takes a multiset M and returns a subset of it 
 that contains only the places $p=(a)$.
 \end{definition}
 
-The definition \hyperref[def:map_conf]{$3.1.2$} remains valid.
-
-\begin{definition}[mapping rules]
-if $r_m$ has any synchronization rule we map $r_m$ with two steps:
-\begin{enumerate}
-    \item $\beta_1(r_m)(t^s)=r_m(r_s)$ for each $t^s$
-    \item $\beta_2(r_m)(t^r)=r_m(r)$ for each $t^r$;
-    $\beta_2(r_m)(t^{s'})=r_m(r_s)$ for each $t^{s'}$    
-\end{enumerate}
-Otherwise, if $r_m$ has no sync rules: $\beta(r_m)(t^r)=r_m(r)$ for each $t^r$
-\end{definition}
-
 \begin{fact}[]
 $v(C_0)=\psi(M_{0})$
 \end{fact}
-
-\begin{fact}[]
-If $r_m$ contains any sync rule: 
-$C \xRightarrow{r_m} C'$ if and only if 
-$v(C)[\beta_1(r_m)> v(C''') [\beta_2(r_m)>v(C'')[\gamma>v(C')$ in $N_\Pi$,
-otherwise: $C \xRightarrow{r_m} C'$ if and only if 
-$v(C)[\beta(r_m)>v(C'')[\gamma>v(C')$ in $N_\Pi$
-\end{fact}
-
-So we have shown that the computations of $\Pi$ coincide with $n$ step sequences of $N_\Pi$ with $n=1$ or $n=2$, 
