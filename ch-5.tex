@@ -1,1 +1,28 @@
-\chapter{Conclusions and Future Developments}
+\chapter{Proof of Equivalence}
+
+We now want to prove that a computational step of $\Pi$ is equivalent to a computational step of $PTI_\Pi$.
+So we know from chapter 2 that a $\Pi$ step is an ordered sequence of micro steps.
+Each micro step is the application of a single evolution rule;
+We have thus to prove that a micro step of $\Pi$ is equivalent to a step of our Petri net.
+The following is an example of a micro step: $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$.
+Let's map the execution of a rule to the execution of a multiset of transitions.
+
+\begin{definition}[mapping micro steps]
+    Given a micro step $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$ from $\Pi$:
+    \begin{enumerate}
+        \item if $r=r_s$ then $t^s$ is executed;
+        \item if $r=r$ then $t^r$ is executed, and if during the precedent step a transition $t^s$ has been executed, then also fire $t^{s'}$;
+        \item if $r=\delta$ then $\gamma$ is executed;
+    \end{enumerate}
+\end{definition}
+
+Since a configuration $C$ in $\Pi$ is a pair $C=(w1,w2)$ we need to change \hyperref[def:map_conf]{$3.1.1$}.
+
+\begin{definition}[$\psi$ operator]
+We define a function $\psi: M \rightarrow M$ that takes a multiset M and returns a subset of it 
+that contains only the places $p=(a)$.
+\end{definition}
+
+\begin{fact}[]
+$v(C_0)=\psi(M_{0})$
+\end{fact}

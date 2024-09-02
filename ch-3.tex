@@ -1,99 +1,73 @@
-\chapter{Traduction}
+\chapter{A New Semantics for Synchronized P Systems}
 
-In this chapter we make our proposal on how P system can be interpreted by Petri nets, starting from the interpretation of a basic P system.
+For the purpose of this thesis it is useful to define a new semantics for our synchronized P systems.
+We know that a rule $r$ that compose a synchronization rule $r_s$ can be executed if and only $r_s$ it's executed during the same evolution step. 
+So we could say that the application of the rule $r$ causally depends on the application of the synchronization rule $r_s$.\newline
 
-\section{From Basic P Systems to Petri Nets}
-\label{sec:basic_p_to_pt}
+Let's say that an evolution step is an ordered sequence of micro evolution steps obtained by the application of a single evolution rule.
+So now a classical maximal parallelism evolution step is represented as a sequence of simple evolution steps.
+This is called \textit{causal semantics}, and was first defined for a basic P system in \cite{busi2007causality}.
 
-To model a flat P system as a PT-net we take inspiration from \cite{kleijn2008petri}, so we introduce a separate place $(a)$ for each object $a$. 
-For each evolution rule $r$ we introduce a separate transition $t^r$.
-If the transformation described by a rule $r$ consumes $k$ copies of an object $a$, then we introduce a $k$-weighted arc from place $(a)$ to transition $t^r$, and similarly for molecules being produced.
-Finally, assuming that, initially, the P system contains $n$ copies of object $a$, we introduce $n$ tokens into place $(a)$.
-We formalise this idea as follows.
-
-\begin{definition}[translating flat P systems into PT-nets]
-\label{def:def_tr_basic}
-The PT-net corresponding to $\Pi$ is:
-\[ N_\Pi = (P,T,W,M_0) \]
-where:
-\begin{enumerate}
-    \item $P=V$ and $M_0(p)=w(a)$ for every place $p=(a)$;
-    \item $T$ consists of distinct transitions $t=t^r$ for every evolution rule $r \in R$;
-    \item for each place $p=(a)$ the weight of the incoming arc is $W(p,t)=lhs^r(a)$ and 
-    $W(t,p)=rhs^r(a)$
-\end{enumerate}
+\begin{definition}[Configuration and partial configuration]
+    In our new semantics a configuration is a pair $C=(w_1,w_2)$ where $w_1$ is the active multiset and $w_2$ is the deposit (or frozen) multiset.\newline
+    We call a configuration $C=(w_1,w_2)$ where $w_2 \neq \emptyset$ a \textit{partial configuration}; if $w_2 = \emptyset$ we'll refer to $C$ as a configuration.
 \end{definition}
 
-To capture the correspondence between the P system $\Pi$ and the PT-net $N_\Pi$, we introduce a straightforward bijection between configurations of $\Pi$ and markings of $N_\Pi$, based on the correspondence of objects and places as well as that of vector multi-rules and steps.
+So now the initial configuration of a P system $\Pi$ is $C_0=(w_1,\emptyset)$.
+Doing a whole evolution step means to go from a configuration $(w_1,\emptyset)$ to another configuration $(w_1',\emptyset)$ passing through a sequence of micro steps.
 
-\begin{definition}[mapping configurations]
-\label{def:map_conf}
-The marking $v(C)$ corresponding to configuration $C=(w)$ is defined by $v(C)(a)=w(a)$ for every place $(a)$.   
-$\beta(r_m)$, where $r_m$ is a multiset of rules over $R$, is defined by 
-$\beta(r_m)(t^r)=r_m(r)$ for every transition $t^r$.  
+Before providing a new definitions of an evolution step and a micro step, we need a some auxiliary definitions.
+We first introduce the concept of \textit{causal configuration}, then we introduce a new function, the \textit{transport function}, that transports the objects in the deposit multiset to the active multiset; it can be seen as a special evolution rule proper of the semantics itself.
+
+\begin{definition}[Causal configuration]
+    A causal configuration is a tuple 
+    \[CC = \langle C, \Gamma \rangle\]
+    where $C$ is a configuration (or a partial configuration) and $\Gamma$ is a set of synchronization rules.
+    Given an initial configuration $C_0$ the respective causal configuration is $CC = \langle C_0,\emptyset\rangle$.
 \end{definition}
 
-\begin{definition}[mapping vector multi-rules]
-$\beta(r_m)$, where $r_m$ is a multiset of rules over $R$, is defined by 
-$\beta(r_m)(t^r)=r_m(r)$ for every transition $t^r$.  
+\begin{definition}[transport function]
+    Let $C=(w,w')$ be a partial configuration of $\Pi$.\newline
+    The transport function $\delta: Conf_\Pi \rightarrow Conf_\Pi$ is defined as follows:\newline
+    $\delta((w,w'))=(w \oplus w', \emptyset)$
 \end{definition}
 
-\begin{fact}[]
-$v(C_0)=M_0$
-\end{fact}
-We know that's true for the way we've defined $M_0$ in \hyperref[def:def_tr_basic]{$3.1.1$}.
+With the notion of transport function and causal configuration we can now define what a computational step and a micro step are.
 
-\begin{fact}[]
-$C \xRightarrow{r_m} C'$ if and only if $v(C)[\beta(r_m)> v(C')$ in $N_\Pi$
-\end{fact}
-
-Togheter with Fact 3.1.1, this implies that the computations of $\Pi$ coincide with step sequences of $N_\Pi$. 
-
-\section{From Synchronized P Sytems to PTI-nets}
-
-Here we extend the modus operandi of the section \hyperref[sec:basic_p_to_pt]{$3.1$} to translate 
-a flat synchronized P system.
-For each synchronization rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this synchronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
-We keep the arcs from places $(a)$ to transitions $t^r$, but substitute the arcs from $t^r$ to $(a)$ with arcs from $t^r$ to $(a,d)$.
-Each synchronization transition is paired with two new control places $(s,1)$ and $(s,2)$ and a new transition $t^{s\prime}$.
-We do a zero-check in the places $(s,1)$ to verify if the relative sync transition has been fired.
-PT-nets are not expressive enough to model the absence of token in a place, so we need to use PT-nets extended with inhibitor arcs.
-Below a more formal definition.
-
-\begin{definition}[Translating Synchronized P systems into PTI-nets]
-The PTI-net corresponding to $\Pi$ is 
-\[ N_\Pi = (P,T,W,I,M_0) \]
-,where:
-
-\begin{enumerate}
-  
-  \item We define the set $P$ as follows:
-  \begin{enumerate}
-     \item for each $a \in V$, there exists a place $(a)$ and a place $(p,d)$, and 
-     $M_0(p)=w(a)$ for each place $p=(a)$ and $M_0(p)=0$ for each place $p=(a,d)$;
-     \item for each $r_s \in \rho$, there exists a place $(s,1)$ and a place $(s,2)$;
-     $M_0(p)=1$ for each place $(s,1)$ and $M_0(p)=0$ for each place $(s,2)$
-    \end{enumerate}
-    
-    \item $T$ consists of distinct transitions $t=t^r$ for every evolution rule $r \in R$, and 
-    distinct transitions $t=t^s$ for every synchronization rule $r_s \in \rho$;
-    for each $t^s$ in $T$ there exists one control transitions $t=t^{s'}$;
-    
-    \item We define the function $W$ as follows:
-    \begin{enumerate}
-        \item for each place $p=(a)$, $W(p,t^r)=lhs^r(a)$, $W(p,t^s)=\sum_{r \in rs} rs(r)lhs^r(a)$, $W(t^r,p)=0$ and $W(t^s,p)=0$;
-        \item for each deposit place $p=(a,d)$, $W(p,t^r)=0$ and $W(p,t^s)=0$, $W(t^r,p)=rhs^r(a)$ and $W(t^s,p)=\sum_{r \in rs} rs(r)rhs^r(a)$;
-        \item for each place $p=(s,1)$, $W(p,t^s)=1$, $W(t^{s'},p)=1$ and for each place $p=(s,2)$, $W(t^s,p)=1$,$W(p,t^{s'})=1$ ;
-    \end{enumerate}
-
-    \item We define the relation $I$ as follows:
-    \begin{enumerate}
-        \item for each place $p=(s,1)$, and for each transition $t^r$, where $r \in r_s$, 
-        $(p,t^r) \in I$;
-    \end{enumerate}
-    
-\end{enumerate}
+\begin{definition}[computational step and micro steps]
+    A computational step is defined as an ordered sequence of micro steps.\newline
+    $(w_1,\emptyset) \Rightarrow (w_1',\emptyset)$ is a computational step if and only if 
+    there exists $k$ micro steps such that $(w_1,\emptyset) \xrightarrow{r_1} (w_1'',w_2'')
+    \xrightarrow{r_2} \cdots \xrightarrow{r_k} (w_1',\emptyset)$ where $r_k$ is the transport function $\delta$.
+    We also define $r=<r_1,\ldots,r_k>$ as the ordered sequence of evolution rules applied at each micro step.
 \end{definition}
 
-Once there are no more transitions that can be fired, all tokens in $p=(a,d)$ are moved in the place $p=(a)$ for each $a \in V$. So there is a ghost step that indicates the end of a computation of the P system. 
-We indicate this ghost step as $\gamma$.
+Now we describe how our semantics works with the following inference rules:\newline
+
+\noindent
+\begin{tabular}{ @{} r c l @{} }
+  R1. & \infer{
+  \langle(w,w'),\Gamma\rangle \xrightarrow{\delta} \langle(w \oplus w', \emptyset),\emptyset\rangle
+  }
+{\text{no rule is enabled}} \\ \\
+  R2. & \infer{
+  \langle(w,w'),\Gamma\rangle \xrightarrow{r_s} \langle(w - lhs(r_s), w' + rhs(r_s)),\Gamma \cup 
+  \{r_s\} \rangle 
+  }
+{\text{$r_s$ is enabled in $(w,w')$}} \\ \\
+  R3. & \infer{
+  \langle (w,w'), \Gamma \rangle \xrightarrow{r} \langle (w - lhs(r_s), w' + rhs(r_s)), \Gamma \rangle 
+  }
+{\text{$r$ is enabled in $(w,w')$ and if $r$ compose $r_s$, $r_s \in \Gamma$}} \\ \\
+\end{tabular}
+
+Let's see an example of our new semantics.
+\begin{example}
+    Consider the system 
+    \[ \Pi = (\{a,b,c,d\},[_1]_1,a^2bc,\{r_1:a \rightarrow b, r_2: b \rightarrow c\}, \{r_{12}: r_1 r_2\}) \]
+    The only rule we can apply is R2, since $r_{12}$ is enabled in $(a^2bc,\emptyset)$ and no other evolution rule is.
+    After this micro step we have $C = (ac,bc)$.
+    Now we can apply rule R3, so we apply the evolution rule $r_1$ thus obtaining the partial configuration $C = (c,b^2c)$.
+    No other evolution rule is enabled, so R1 is the only rule applicable, and we get 
+    $C = (b^2c^2)$, and this is the configuration obtained after a whole evolution step.
+\end{example}
