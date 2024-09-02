@@ -7,9 +7,11 @@ In this chapter we introduce some general notions as well as a more deep underst
 \begin{definition}[Multiset]
 Let $U$ be an arbitrary set. A multiset over U is a mapping \newline $m : U \rightarrow N$.
 The multiplicity of an element $u$ in $m$ is given by the natural number $m(u)$.
+Given the multisets $m$ and $m'$, we write $m \subseteq m'$ if $m(u) \leq m'(s)$ for all $u \in U$, 
+while $\oplus$ denotes their multiset union: $m \oplus m' = m(u) + m'(u)$ for each $u$.
+
 \end{definition}
 
-The operator $\oplus$ denotes multiset union: $m \oplus m' = m(u) + m'(u)$ for each $u$.
 
 \begin{definition}[Alphabet]
 An alphabet is a finite nonempty set of abstract symbols. Given an alphabet $V$, we denote by $V^*$
@@ -24,7 +26,7 @@ Membrane computing is a branch of natural computing, introduced by Gheorghe Paun
 Membrane systems are based upon the notion of \textit{membrane structure}, which is a structure composed by several cell-membranes, hierarchically embedded in a main membrane called the \textit{skin membrane}.
 The membranes delimit \textit{regions} and we associate with each region a set of \textit{objects}, described by some symbols over an alphabet, and a set of \textit{evolution rules}.
 In the basic variant, the objects evolve according to the evolution rules, which can modify the objects to obtain new objects.
-The evolution rules are applied in a maximally parallel manner: at each step, all the objects which can evolve should evolve.
+The evolution rules are applied in a \textit{maximally parallel manner}: at each step, all the objects which can evolve should evolve.
 If a computation \textit{halts}, so no further evolution rule can be applied, the result of the computation is defined to be the number of objects in a specified membrane.
 
 \begin{definition}[P system]
@@ -36,31 +38,47 @@ where:
   \item $\mu$ is a membrane structure consisting of $d$ membranes (labeled with $1,2,...,d$);
   \item $w^0_1, 1 \leq i \leq d$, are strings from $V^*$ representing multisets over $V$ associated
   with the regions $1,2,...,d$ of $\mu$;
-  \item $R_i, 1 \leq i \leq d$, are finite sets of evolution rules over $V$ associated 
-  with the regions $1,2,...,d$ of $\mu$; these evolution rules are of the form $u \rightarrow v$,
-  where $u$ and $v$ are strings from $V*$;
+  \item $R_i, 1 \leq i \leq d$, are finite sets of evolution rules $r$ over $V$, associated 
+  with the regions $1,2,...,d$ of $\mu$; these evolution rules are of the form 
+  \[ lhs^r \rightarrow rhs^r \]
+  where $lhs^r$ is the left hand side of $r$, $rhs^r$ the right hand side of $r$, and both are non-empty multisets over $V$.
   \item $i_0$ is a number between 1 and $d$ which specifies the output membrane of %\Pi;
 \end{enumerate}
-A configuration of $\Pi$ is a tuple $C=(w_1,...,w_d)$ of multisets of objects, and 
+A P system $\Pi$ as above \textit{evolves} from configuration to configuration as a consequence of the application of (multisets of) evolution rules in each membrane.
+Formally, a \textit{configuration} is a tuple $C=(w_1,...,w_d)$, where each $w_i$ is a multiset of objects (with $1 \leq i \leq d$).
 $C_0=(w^0_1,...,w^0_d)$ is the initial configuration.
 \end{definition}
 
-According to \cite{agrigoroaiei2010flattening}, any P system can be flattened to a system of degree 1, we call this type of P systems \textit{flat P systems}.
-For the sake of simplicity, from now on when we talk about P systems we refer to flat P systems.
+According to \cite{agrigoroaiei2010flattening}, any P system can be flattened to a system of degree 1; we call this type of P systems \textit{flat P systems}.
+For the sake of simplicity, from now on when we talk about P systems we are referring to flat P systems.
 
 \begin{definition}[Flat P system]
 A flat P system is a P system of degree one
 \[ \Pi = (V,\mu,w^0,R) \]
 
-Given the fact that we're working with a one degree system we removed the subscript from $w$ and $R$. 
-A configuration of $\Pi$ is a singleton $C=(w)=w$ of a multiset of objects, and 
+A configuration of $\Pi$ is now a singleton $C=(w)=w$, where $w$ is a multiset of objects over $V$, and 
 $C_0=(w^0)=w^0$ is the initial configuration.
 \end{definition}
 
-The following example will clarify the definition of a P system.
+Given two configurations $C=(w)$ and $C'=(w')$, $C$ can evolve into $C'$ if there exists a multiset of evolution rules $\mathcal{R}$ such that the following hold:
+
+\begin{enumerate}
+    \item $lhs_\mathcal{R} \leq w$;
+    \item there is no rule $r$ in $\mathcal{R}$ such that $lhs^r+lhs_\mathcal{R} \leq w$;
+    \item for each object $a \in V$,
+    \[ w'(a)=w(a)-lhs_\mathcal{R}(a)+rhs_\mathcal{R}(a)\]
+\end{enumerate}
+
+The maximal parallelism is captured by 2. according to which no additional evolution rule can be applied.
+3. describe the effect of the application of the rules in $\mathcal{R}$.
+To be applied in an evolution step a rule $r$ has to be \textit{enabled}; for a rule $r$ to be enabled in $C=(w)$ means that $lhs(r) \leq w$.
+By $C \xRightarrow{\mathcal{R}} C'$ we denote that $C$ evolves into $C'$ due to the application of $\mathcal{R}$.
+A finite \textit{computation} of $\Pi$ is now a (finite) sequence of evolutions starting from the initial configuration $C_0$.\newline
+
+The following example will clarify what a P system is and how it evolves.
 \begin{example}
 \label{ex:flat_membrane}
-Consider the system of degree 1:
+Consider the following P system:
 \begin{description}
    \item $\Pi=(V,\mu,w^0,R)$,
    \item $V=\{a,b,c\}$,
@@ -89,10 +107,12 @@ The system is represented in Fig 2.1.
 
 The possibilities to evolve in one step from the initial configuration are: 
 \begin{description}
-    \item $C=w=b^3$, obtained applying $r=r_1^2$,
-    \item $C=w=bc^2$, obtained applying $r=r_2^2$,
-    \item $C=w=b^2c$, obtained applying $r=r_1 r_2$
+    \item $a^2b \xRightarrow{\mathcal{R}} b^3$ where $\mathcal{R}=r_1^2$,
+    \item $a^2b \xRightarrow{\mathcal{R}} bc^2$ where $\mathcal{R}=r_2^2$,
+    \item $a^2b \xRightarrow{\mathcal{R}} b^2c$ where $\mathcal{R}=r_1 r_2$
 \end{description}
+
+Note that the evolution of $C_0$ is non-deterministic in the sense that there may be different multisets of rules applicable to $C_0$ as described in the example above.
 
 \subsection{Synchronized P systems}
 
@@ -117,57 +137,71 @@ where:
 \end{enumerate}
 \end{definition}
 
-% Questa parte è da cancellare e riscrivere 
-Let's try to understand better what synchronization means:
-let $(r1,r2) \in \rho$; if $r1$ is executed at least one time, then also
-$r2$ has to be executed at least one time during this step, and vice versa; if that is not possible neither of them will be executed during the current step.
+Let's try to understand better what synchronization means.
+Synchronization means to create a relationship between evolution rules, and the rules that are in relation with each other needs to be applied at least one time each in a single evolution step;
+if that is not possible then none of this rules can be applied.
+So for each rule to be applied in $C$ at least once, each rule has to be enabled in $C$.
+We refer to such a relationship between rules with new evolution rules called \textit{synchronization rules}.
+A synchronization rule is the composition of rules that are in relationship with each other.
+We say that \textit{a synchronization is enabled in $C$} if the corresponding synchronization rule is enabled in $C$. 
+So a rule $r$ that compose a synchronization rule $r_s$ can be applied in $C$ only if $r_s$ is applied in $C$ at the same evolution step. 
 
-We use the following notation to describe an instance of $\rho$: 
-$\rho=((r1 \otimes r2),(r3 \otimes r4 \otimes r5))$.
-This means that $r_1$ can be executed only and only if $r_2$ can be executed at least one time;
-in addition, $r_1$ it's executed at least one time only and only if also $r_2$ it's executed at least one time.
-
-\begin{definition}[synchronization rule]
+\begin{definition}[Synchronization rule]
 \label{def:sync_rule}
-We define a synchronization rule $r_s$ as a set of rules.\\
-For example $r_s=r_1 r_2 = r_1 \otimes r_2$ could be a synchronization rule.
+A synchronization rule $r_s$ is a special evolution rule that is the result of the composition of several distinct evolution rules.
+Synchronization rules are defined from the partial relation $\rho$ in the following way:\newline
+given a set of rules $r_1,...,r_n$ that are in a relationship according to $\rho$, there exists
+a synchronization rule $r_s$ of the form:
+\[ lhs^{r_1} + \cdots + lhs^{r_n} \rightarrow rhs^{r_1} + \cdots + rhs^{r_n} \] 
+such as $\gamma(r_s)=\{r_1,...,r_n\}$ is the set of rules that compose $r_s$.
+
+We use the following notations when we refer to synchronization rules: \newline
+given $\gamma(r_s)=\{r_1,...,r_n\}$, $r_s=r_1 \cdots r_n = r_1 \otimes \cdots \otimes r_n$.
 \end{definition}
 
+Let's see how the maximal parallelism behaviour is modified when synchronization of rules is used.
 \begin{example}
-    We modify \hyperref[ex:flat_membrane]{$example 1$} adding the synchronization 
-    $r_1 \otimes r_2$.\\
+    We modify \hyperref[ex:flat_membrane]{Example 1} adding the synchronization 
+    $r_{12} = r_1 \otimes r_2$.\\
     Now there is only one possible way to evolve in one step from the initial configuration:\\
-    $C=w=b^2c$, obtained applying $r=r_1 r_2=r_1 \otimes r_2=r_{12}$;
+    $a^2b \xRightarrow{\mathcal{R}} b^2c$, where $\mathcal{R}=r_{12}$.
 \end{example}
-
-In this previous example we have illustrated how the maximal parallelism behaviour is modified when synchronization of rules is used.
 
 \section{Semantics of Synchronized P Systems}
 
 For the purpose of this thesis it is useful to define a new semantics for our synchronized P systems.
-We know that a rule $r$ which is part of a synchronization rule $r_s$ can be executed if and only $r_s$ it's executed during the same computational step. 
+We know that a rule $r$ that compose a synchronization rule $r_s$ can be executed if and only $r_s$ it's executed during the same evolution step. 
 So we could say that the application of the rule $r$ causally depends on the application of the synchronization rule $r_s$.\newline
 
-Let's say that a computational step is an ordered sequence of micro steps obtained by the application of a single evolution rule.
+Let's say that an evolution step is an ordered sequence of micro evolution steps obtained by the application of a single evolution rule.
 So now a classical maximal parallelism evolution step is represented as a sequence of simple evolution steps.
-This is a \textit{causal semantics}, and was first defined for a basic P system in \cite{busi2007causality}.\newline
+This is called \textit{causal semantics}, and was first defined for a basic P system in \cite{busi2007causality}.
 
-\begin{definition}[configuration and partial configuration]
+\begin{definition}[Configuration and partial configuration]
     In our new semantics a configuration is a pair $C=(w_1,w_2)$ where $w_1$ is the active multiset and $w_2$ is the deposit (or frozen) multiset.\newline
     We call a configuration $C=(w_1,w_2)$ where $w_2 \neq \emptyset$ a \textit{partial configuration}; if $w_2 = \emptyset$ we'll refer to $C$ as a configuration.
 \end{definition}
 
 So now the initial configuration is $C_0=(w_1,\emptyset)$.
-Doing a whole computational step means to go from a configuration $(w_1,\emptyset)$ to another configuration $(w_1',\emptyset)$ passing throw a sequence of micro steps.
+Doing a whole computational step means to go from a configuration $(w_1,\emptyset)$ to another configuration $(w_1',\emptyset)$ passing through a sequence of micro steps.
 
-Before providing the definition of a computational step and of micro steps, we need a new auxiliary definition.
-We introduce a new function, the \textit{transport function}, that transports the objects in the deposit multiset to the active multiset.
+Before providing the definitions of a computational step and a micro step, we need a some auxiliary definitions.
+We first introduce the concept of \textit{causal configuration}, then we introduce a new function, the \textit{transport function}, that transports the objects in the deposit multiset to the active multiset; it can be seen as a special evolution rule proper of the semantics itself.
+
+\begin{definition}[Causal configuration]
+    A causal configuration is a tuple 
+    \[CC = \langle C, \Gamma \rangle\]
+    where $C$ is a configuration (or a partial configuration) and $\Gamma$ is a set of synchronization rules.
+    Given an initial configuration $C_0$ the respective causal configuration is $CC = \langle C_0,\emptyset\rangle$.
+\end{definition}
 
 \begin{definition}[transport function]
     Let $C=(w,w')$ be a partial configuration of $\Pi$.\newline
     The transport function $\delta: Conf_\Pi \rightarrow Conf_\Pi$ is defined as follows:\newline
     $\delta((w,w'))=(w \oplus w', \emptyset)$
 \end{definition}
+
+With the notion of transport function and causal configuration we can now define what a computational step and a micro step are.
 
 \begin{definition}[computational step and micro steps]
     A computational step is defined as an ordered sequence of micro steps.\newline
@@ -181,23 +215,30 @@ Now we describe how our semantics works with the following inference rules:\newl
 
 \noindent
 \begin{tabular}{ @{} r c l @{} }
-  R1. & \infer{(w,w') \xrightarrow{\delta} (w \oplus w', \emptyset) }
-{\text{no rule is applicable}} \\ \\
-  R2. & \infer{(w,w') \xrightarrow{r_s} (w - lhs(r_s), w' + rhs(r_s)) }
+  R1. & \infer{
+  \langle(w,w'),\Gamma\rangle \xrightarrow{\delta} \langle(w \oplus w', \emptyset),\emptyset\rangle
+  }
+{\text{no rule is enabled}} \\ \\
+  R2. & \infer{
+  \langle(w,w'),\Gamma\rangle \xrightarrow{r_s} \langle(w - lhs(r_s), w' + rhs(r_s)),\Gamma \cup 
+  \{r_s\} \rangle 
+  }
 {\text{$r_s$ is enabled in $(w,w')$}} \\ \\
-  R3. & \infer{(w,w') \xrightarrow{r} (w - lhs(r_s), w' + rhs(r_s)) }
-{\text{$r$ is enabled in $(w,w')$ and if $r$ is part of $r_s$, $r_s$ has been executed}} \\ \\
+  R3. & \infer{
+  \langle (w,w'), \Gamma \rangle \xrightarrow{r} \langle (w - lhs(r_s), w' + rhs(r_s)), \Gamma \rangle 
+  }
+{\text{$r$ is enabled in $(w,w')$ and if $r$ compose $r_s$, $r_s \in \Gamma$}} \\ \\
 \end{tabular}
 
 Let's see an example of our new semantics.
 \begin{example}
     Consider the system 
-    \[ \Pi = (\{a,b,c,d\},[_1]_1,a^2bc,\{r_1:a \rightarrow b, r_2: b \rightarrow c\}, \{r_{s1}: r_1 r_2\}) \]
-    The only rule we can apply is R2, since $r_{s1}$ is enabled in $(a^2bc,\emptyset)$ and no other evolution rule is.
+    \[ \Pi = (\{a,b,c,d\},[_1]_1,a^2bc,\{r_1:a \rightarrow b, r_2: b \rightarrow c\}, \{r_{12}: r_1 r_2\}) \]
+    The only rule we can apply is R2, since $r_{12}$ is enabled in $(a^2bc,\emptyset)$ and no other evolution rule is.
     After this micro step we have $C = (ac,bc)$.
     Now we can apply rule R3, so we apply the evolution rule $r_1$ thus obtaining the partial configuration $C = (c,b^2c)$.
     No other evolution rule is enabled, so R1 is the only rule applicable, and we get 
-    $C = (b^2c^2)$, and this is the configuration obtained after a whole computational step.
+    $C = (b^2c^2)$, and this is the configuration obtained after a whole evolution step.
 \end{example}
 
 \section{Petri Net}
