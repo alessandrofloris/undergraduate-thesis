@@ -1,28 +1,50 @@
 \chapter{Proof of Equivalence}
 
-We now want to prove that a computational step of $\Pi$ is equivalent to a computational step of $PTI_\Pi$.
-So we know from chapter 2 that a $\Pi$ step is an ordered sequence of micro steps.
-Each micro step is the application of a single evolution rule;
-We have thus to prove that a micro step of $\Pi$ is equivalent to a step of our Petri net.
-The following is an example of a micro step: $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$.
-Let's map the execution of a rule to the execution of a multiset of transitions.
+We now want to prove that a computational step of $\Pi$ is equivalent (coincide) to a computational step of $N_\Pi$.
+To do so, we need to demonstrate that both systems produce the same result under the same conditions. 
+Recall that the result of a computation of a synchronized P system $\Pi$ is a configuration $C=(w1,\emptyset)$, and the result of a computation of a PTI-net $N_\Pi$ is a marking $\psi(M)$.
 
-\begin{definition}[mapping micro steps]
-    Given a micro step $(w_1,w_2) \xrightarrow{r} (w_1',w_2')$ from $\Pi$:
-    \begin{enumerate}
-        \item if $r=r_s$ then $t^s$ is executed;
-        \item if $r=r$ then $t^r$ is executed, and if during the precedent step a transition $t^s$ has been executed, then also fire $t^{s'}$;
-        \item if $r=\delta$ then $\gamma$ is executed;
-    \end{enumerate}
+To demonstrate the correspondence between the two models of computation let's introduce a bijection between configurations of $\Pi$ and markings of $N_\Pi$.
+
+\begin{definition}[Mapping configuration]
+    Let $C=(w1,w2)$ be a configuration of $\Pi$.\newline
+    Then the corresponding marking $v(C)$ of $N_\Pi$ is defined by:
+    \[ v(C)(a)=w_1(a) \text{ and } v(C)(a,d)=w_2(a)\]
+    for each place $(a)$ and for each place $(a,d)$
 \end{definition}
 
-Since a configuration $C$ in $\Pi$ is a pair $C=(w1,w2)$ we need to change \hyperref[def:map_conf]{$3.1.1$}.
-
-\begin{definition}[$\psi$ operator]
-We define a function $\psi: M \rightarrow M$ that takes a multiset M and returns a subset of it 
-that contains only the places $p=(a)$.
-\end{definition}
-
+Follows the fact:
 \begin{fact}[]
-$v(C_0)=\psi(M_{0})$
+$v(C_0)=\psi(M_0)$
 \end{fact}
+
+Now we define a correspondence between micro steps of $\Pi$ and steps of $N_\Pi$ using inference rules.
+
+\noindent
+\begin{tabular}{ @{} r c l @{} }
+  
+  R1. & \infer{
+  M_1 \xrightarrow{t_s} M_2
+  }
+  {\text{$\Pi$ executes $C_1 \xrightarrow{r_s} C_2$}} \\ \\
+
+  R2. & \infer{
+   M_1 \xrightarrow{t^r t^{s'}} M_2
+  }
+  {\text{$\Pi$ executes $C_1 \xrightarrow{r} C_2$ and $\exists t^s \in \mathcal{T}_{n-1}$}} \\ \\
+  
+  R3. & \infer{
+   M_1 \xrightarrow{t^r} M_2
+  }
+  {\text{$\Pi$ executes $C_1 \xrightarrow{r} C_2$ and not exists a $t^s \in \mathcal{T}_{n-1}$}} \\ \\
+
+  R4. & \infer{
+   M_1 \xrightarrow{\gamma t^{s'}} M_2
+  }
+  {\text{$\Pi$ executes $C_1 \xrightarrow{\delta} C_2$ and $\exists t^s \in \mathcal{T}_{n-1}$}} \\ \\
+
+  R4. & \infer{
+   M_1 \xrightarrow{\gamma} M_2
+  }
+  {\text{$\Pi$ executes $C_1 \xrightarrow{\delta} C_2$ and not exists a $t^s \in \mathcal{T}_{n-1}$}} \\ \\
+\end{tabular}

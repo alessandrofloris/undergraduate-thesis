@@ -53,10 +53,10 @@ Togheter with Fact 3.1.1, this implies that the computations of $\Pi$ coincide w
 
 Here we extend the modus operandi of the section \hyperref[sec:basic_p_to_pt]{$3.1$} to translate 
 a flat synchronized P system.
-For each synchronization rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call this synchronization transitions) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
+For each synchronization rule $r_s$ (see \hyperref[def:sync_rule]{$2.2.4$}) we introduce a new transition $t^s$ (we call these \textit{synchronization transitions}) and for each object $a \in V$ we introduce a new place $(a,d)$ where $d$ stands for deposit (we call them deposit places).
 We keep the arcs from places $(a)$ to transitions $t^r$, but substitute the arcs from $t^r$ to $(a)$ with arcs from $t^r$ to $(a,d)$.
 Each synchronization transition is paired with two new control places $(s,1)$ and $(s,2)$ and a new transition $t^{s\prime}$.
-We do a zero-check in the places $(s,1)$ to verify if the relative sync transition has been fired.
+We do a zero-check in the places $(s,1)$ to verify if the relative sync transitions were part of the previous step.
 PT-nets are not expressive enough to model the absence of token in a place, so we need to use PT-nets extended with inhibitor arcs.
 Below a more formal definition.
 
@@ -69,7 +69,7 @@ The PTI-net corresponding to $\Pi$ is
   
   \item We define the set $P$ as follows:
   \begin{enumerate}
-     \item for each $a \in V$, there exists a place $(a)$ and a place $(p,d)$, and 
+     \item for each $a \in V$, there exists a place $(a)$ and a place $(a,d)$, and 
      $M_0(p)=w(a)$ for each place $p=(a)$ and $M_0(p)=0$ for each place $p=(a,d)$;
      \item for each $r_s \in \rho$, there exists a place $(s,1)$ and a place $(s,2)$;
      $M_0(p)=1$ for each place $(s,1)$ and $M_0(p)=0$ for each place $(s,2)$
@@ -97,3 +97,32 @@ The PTI-net corresponding to $\Pi$ is
 
 Once there are no more transitions that can be fired, all tokens in $p=(a,d)$ are moved in the place $p=(a)$ for each $a \in V$. So there is a ghost step that indicates the end of a computation of the P system. 
 We indicate this ghost step as $\gamma$.
+
+\section{Semantic of our PTI net}
+
+In this section we recall the definition of step semantics for PT nets from \cite{vogler1992partial} but we extend the definition with the presence of inhibitor arcs.
+
+\begin{definition}[Step]
+    Let $N=(P,T,W,I,M)$ be a PTI-net.
+    A multiset of transition $\mathcal{T}$, called step, is enabled to occur in a marking 
+    $M$ of $N$ iff:
+    
+    \[ \forall p \in P : M(p) \geq \sum_{t \in T} W(p,t) \cdot \mathcal{T}(t)  \text{ and }
+    (p,t) \in I \rightarrow M(p)=0 \]
+
+    If a step $\mathcal{T}$ is enabled to occur in a marking $M$, then its occurence leads to the new marking $M'$ defined by:
+    \[ \forall p \in P : M'(p)=M(p)+\sum_{t \in T} W(t,p) - W(p,t)) \cdot \mathcal{T}(t) \]
+
+    We write $M \xrightarrow{\mathcal{T}} M'$ to denote that $\mathcal{T}$ is enabled to occur in 
+    $M$ and that its occurrence leads to $M'$.
+\end{definition}
+
+Our new PTI semantics is a \textit{non maximal semantics}.
+It means that if $\mathcal{T}$ is enabled in a marking $M$, then could exists a transition $t$ such that $M[\mathcal{T} \cup \{t\}\rangle$.
+
+\begin{definition}[Step sequence]
+    A finite sequence of steps (step sequence) $\sigma = \mathcal{T}_1 \dots \mathcal{T}_n$, is called a step sequence enabled in $M$ and leading to $M_n$ if there exists a sequence of markings $M_1, \ldots , M_n$, such that
+    \[ M \xrightarrow{\mathcal{T}_1} M_1 \xrightarrow{\mathcal{T}_2} \cdots \xrightarrow{\mathcal{T}_n} M_n\]
+
+    So we say that a marking $M'$ is reachable from the marking $M$ if and only if there exists a steps sequence enabled in $M$ and leading to $M'$.
+\end{definition}
